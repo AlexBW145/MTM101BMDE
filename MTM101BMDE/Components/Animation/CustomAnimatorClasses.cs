@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -106,7 +105,7 @@ namespace MTM101BaldAPI.Components.Animation
         }
     }
 
-    [Serializable]
+    [Serializable, Obsolete("Use MTM101BaldAPI.Components.Animation.CustomSpriteRotatorAnimator instead! This component manipulates SpriteRotator with reflection to make the rotating sprite appearance animated.")]
     public class CustomRotatedSpriteAnimator : CustomAnimator<SpriteArrayAnimation, SpriteArrayFrame, Sprite[]>
     {
         public SpriteRotator rotator;
@@ -128,6 +127,48 @@ namespace MTM101BaldAPI.Components.Animation
                 return;
             }
             ApplyFrame(animations[defaultAnimation].frames[0].value);
+        }
+    }
+
+    [Serializable]
+    public class CustomSpriteRotatorAnimator : CustomAnimator<SpriteAnimation, SpriteFrame, Sprite>
+    {
+        public AnimatedSpriteRotator renderer;
+
+        private static FieldInfo
+            _renderer = AccessTools.DeclaredField(typeof(AnimatedSpriteRotator), "renderer"),
+            _spriteSheet = AccessTools.DeclaredField(typeof(SpriteRotationMap), "spriteSheet"),
+            _spriteMap = AccessTools.DeclaredField(typeof(AnimatedSpriteRotator), "spriteMap");
+
+        [SerializeField] private List<SpriteRotationMap> spriteMap = new List<SpriteRotationMap>();
+
+        public override void ApplyFrame(Sprite frame) => renderer.targetSprite = frame;
+
+        private List<Sprite> AddAngledAnimation(int angleCount, List<Sprite> frames)
+        {
+            var map = new SpriteRotationMap()
+            {
+                angleCount = angleCount,
+            };
+            _spriteSheet.SetValue(map, frames.ToArray());
+            spriteMap.Add(map);
+            List<Sprite> frontFrames = new List<Sprite>(frames);
+            for (int i = frontFrames.Count - 1; i >= 0; i--)
+            {
+                if (!((i % angleCount) == 0))
+                    frontFrames.RemoveAt(i);
+            }
+            return frontFrames;
+        }
+
+        public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, int fps) => animations.Add(key, new SpriteAnimation(fps, AddAngledAnimation(angleCount, frames).ToArray()));
+        public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, float totalTime) => animations.Add(key, new SpriteAnimation(AddAngledAnimation(angleCount, frames).ToArray(), totalTime));
+
+        public void SetSpriteRenderer(SpriteRenderer sprRenderer) => _renderer.SetValue(renderer, sprRenderer);
+
+        protected override void VirtualAwake()
+        {
+            _spriteMap.SetValue(renderer, spriteMap.ToArray());
         }
     }
 

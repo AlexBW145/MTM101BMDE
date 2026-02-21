@@ -105,6 +105,29 @@ namespace MTM101BaldAPI.Components.Animation
         }
     }
 
+    [Serializable]
+    public class SpriteRotatedAnimation : CustomAnimation<SpriteFrame, Sprite>
+    {
+        public readonly int angleCount;
+        public SpriteRotatedAnimation(int angleCount)
+        {
+            this.angleCount = angleCount;
+        }
+        public SpriteRotatedAnimation(SpriteFrame[] frames, int angleCount) : base(frames)
+        {
+            this.angleCount = angleCount;
+        }
+        public SpriteRotatedAnimation(int fps, Sprite[] frames, int angleCount) : base(fps, frames)
+        {
+            this.angleCount = angleCount;
+        }
+
+        public SpriteRotatedAnimation(Sprite[] frames, float totalTime, int angleCount) : base(frames, totalTime)
+        {
+            this.angleCount = angleCount;
+        }
+    }
+
     [Serializable, Obsolete("Use MTM101BaldAPI.Components.Animation.CustomSpriteRotatorAnimator instead! This component manipulates SpriteRotator with reflection to make the rotating sprite appearance animated.")]
     public class CustomRotatedSpriteAnimator : CustomAnimator<SpriteArrayAnimation, SpriteArrayFrame, Sprite[]>
     {
@@ -163,6 +186,12 @@ namespace MTM101BaldAPI.Components.Animation
 
         public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, int fps) => animations.Add(key, new SpriteAnimation(fps, AddAngledAnimation(angleCount, frames).ToArray()));
         public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, float totalTime) => animations.Add(key, new SpriteAnimation(AddAngledAnimation(angleCount, frames).ToArray(), totalTime));
+        public void LoadAngledAnimations(Dictionary<string, SpriteRotatedAnimation> animations)
+        {
+            this.animations = new Dictionary<string, SpriteAnimation>();
+            foreach (var animation in animations)
+                this.animations.Add(animation.Key, new SpriteAnimation(AddAngledAnimation(animation.Value.angleCount, animation.Value.frames.Select(x => x.value).ToList()).ToArray(), animation.Value.animationLength));
+        }
 
         public void SetSpriteRenderer(SpriteRenderer sprRenderer) => _renderer.SetValue(renderer, sprRenderer);
 

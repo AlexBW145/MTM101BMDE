@@ -128,7 +128,7 @@ namespace MTM101BaldAPI.Components.Animation
         }
     }
 
-    [Serializable, Obsolete("Use MTM101BaldAPI.Components.Animation.CustomSpriteRotatorAnimator instead! This component manipulates SpriteRotator with reflection to make the rotating sprite appearance animated.")]
+    [Serializable]
     public class CustomRotatedSpriteAnimator : CustomAnimator<SpriteArrayAnimation, SpriteArrayFrame, Sprite[]>
     {
         public SpriteRotator rotator;

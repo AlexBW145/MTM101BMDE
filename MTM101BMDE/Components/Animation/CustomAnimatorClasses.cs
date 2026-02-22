@@ -106,7 +106,7 @@ namespace MTM101BaldAPI.Components.Animation
     }
 
     [Serializable]
-    public class SpriteRotatedAnimation : CustomAnimation<SpriteFrame, Sprite>
+    public class SpriteRotatedAnimation : CustomAnimation<SpriteFrame, Sprite> // I don't get it... It's used in one part.
     {
         public readonly int angleCount;
         public SpriteRotatedAnimation(int angleCount)
@@ -165,7 +165,7 @@ namespace MTM101BaldAPI.Components.Animation
 
         [SerializeField] private List<SpriteRotationMap> spriteMap = new List<SpriteRotationMap>();
 
-        public override void ApplyFrame(Sprite frame) => renderer.targetSprite = frame;
+        public override void ApplyFrame(Sprite frame) => renderer.targetSprite = frame; // Any front facing sprites is the frame that is applied to the component.
 
         private List<Sprite> AddAngledAnimation(int angleCount, List<Sprite> frames)
         {

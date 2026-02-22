@@ -186,6 +186,9 @@ namespace MTM101BaldAPI.Components.Animation
 
         public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, int fps) => animations.Add(key, new SpriteAnimation(fps, AddAngledAnimation(angleCount, frames).ToArray()));
         public void AddAngledAnimation(string key, int angleCount, List<Sprite> frames, float totalTime) => animations.Add(key, new SpriteAnimation(AddAngledAnimation(angleCount, frames).ToArray(), totalTime));
+        /// <summary>
+        /// Loads the animations into the CustomAnimator
+        /// </summary>
         public void LoadAngledAnimations(Dictionary<string, SpriteRotatedAnimation> animations)
         {
             this.animations = new Dictionary<string, SpriteAnimation>();
@@ -197,7 +200,8 @@ namespace MTM101BaldAPI.Components.Animation
 
         protected override void VirtualAwake()
         {
-            _spriteMap.SetValue(renderer, spriteMap.ToArray());
+            if (renderer != null)
+                _spriteMap.SetValue(renderer, spriteMap.ToArray());
         }
     }
 

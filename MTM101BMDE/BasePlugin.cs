@@ -940,7 +940,8 @@ PRESS ALT+F4 TO EXIT THE GAME.
                 // GLTF loader and animator as code test (Well we can not call it on `AssetsLoadPre` since it gets called when the scene is unloaded.)
                 var data = AssetLoader.GLTFModelFromFile(Path.Combine(Application.streamingAssetsPath, "TestHumanoidRig.glb"));
                 yield return new WaitUntil(() => data[0] != null);
-                var myman = data[0];
+                var myman = data[0].Duplicate();
+                DontDestroyOnLoad(myman);
                 var cawl = myman.GetComponent<Animation>();
                 cawl.wrapMode = WrapMode.Loop;
                 cawl.Play("CrawlForward");

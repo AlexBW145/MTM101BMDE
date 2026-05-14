@@ -178,10 +178,20 @@ namespace MTM101BaldAPI.AssetTools
                 KeepCPUCopyOfTexture = true,
             })
             {
-                import.CustomShaderName = MTM101BaldiDevAPI.AssetMan.Get<Material>("TileBase").shader.name;
+                import.SceneParent = MTM101BaldiDevAPI.prefabTransform;
+                var mat = MTM101BaldiDevAPI.AssetMan.Get<Material>("TileBase");
+                import.CustomShaderName = mat.shader.name;
                 var obj = new InstantiatedGLTFObject[1]; // Worst part is that it took me almost 12 hours for a reasonable working result.
-                import.LoadScene(onLoadComplete: (gObj, task) => obj[0] = gObj.GetComponent<InstantiatedGLTFObject>());
-                MTM101BaldiDevAPI.Log.LogInfo("It imported!!");
+                import.LoadScene(onLoadComplete: (gObj, task) =>
+                {
+                    obj[0] = gObj.GetComponent<InstantiatedGLTFObject>();
+                    obj[0].gameObject.name = filename;
+                    obj[0].CachedData.MaterialCache.Do(x =>
+                    {
+                        x.GetContents(false).SetTexture("_LightMap", mat.GetTexture("_LightMap"));
+                        x.GetContents(true).SetTexture("_LightMap", mat.GetTexture("_LightMap"));
+                    });
+                });
                 return obj;
             }
         }

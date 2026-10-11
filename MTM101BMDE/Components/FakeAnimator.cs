@@ -89,7 +89,20 @@ namespace MTM101BaldAPI.Components
 
     public class FakeAnimatorSimple : FakeAnimator
     {
-        public ISimpleAnimator simpleAnimator;
+        [SerializeField]
+        private Component _animator;
+
+        public ISimpleAnimator simpleAnimator
+        {
+            get
+            {
+                return (ISimpleAnimator)_animator;
+            }
+            set
+            {
+                _animator = (Component)value;
+            }
+        }
 
         public override float speed { get => simpleAnimator.RawSpeed; set => simpleAnimator.RawSpeed = value; }
 
